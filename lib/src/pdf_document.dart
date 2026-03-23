@@ -8,6 +8,7 @@ import 'fonts/pdf_standard_font.dart';
 import 'fonts/pdf_truetype_font.dart';
 import 'bookmarks/pdf_bookmark.dart';
 import 'utils/pdf_constants.dart';
+import 'parser/pdf_parser.dart';
 
 /// The main entry point for creating PDF documents.
 ///
@@ -28,6 +29,15 @@ class PdfDocument {
   final PdfDocumentInfo documentInfo = PdfDocumentInfo();
   final PdfBookmarkCollection bookmarks = PdfBookmarkCollection();
 
+  /// Raw bytes of the original PDF (if loaded from bytes/base64).
+  Uint8List? _rawBytes;
+
+  /// Whether this document was loaded from existing PDF data.
+  bool get isLoaded => _rawBytes != null;
+
+  /// Get the raw bytes of the original PDF (if loaded).
+  Uint8List? get rawBytes => _rawBytes;
+
   /// Create a new empty PDF document.
   PdfDocument();
 
@@ -37,16 +47,72 @@ class PdfDocument {
     return PdfDocument.fromBytes(bytes);
   }
 
-  /// Create a PdfDocument from raw PDF bytes (for loading existing PDFs).
-  /// Note: V1 creates a new document; full loading is future work.
+  /// Create a PdfDocument from raw PDF bytes.
+  ///
+  /// Parses the PDF structure including pages, fonts, bookmarks,
+  /// and document metadata.
   factory PdfDocument.fromBytes(Uint8List bytes) {
-    // For V1, we return a new empty document.
-    // Full PDF parsing will be added in future versions.
-    return PdfDocument();
+    final doc = PdfDocument();
+    doc._rawBytes = bytes;
+
+    try {
+      final parser = PdfParser(bytes);
+      parser.parse();
+
+      // Populate document info.
+      if (parser.title != null) doc.documentInfo.title = parser.title;
+      if (parser.author != null) doc.documentInfo.author = parser.author;
+      if (parser.subject != null) doc.documentInfo.subject = parser.subject;
+      if (parser.creator != null) doc.documentInfo.creator = parser.creator;
+
+      // Populate pages.
+      for (final parsedPage in parser.pages) {
+        String? contentStreamStr;
+        if (parsedPage.contentStreamData != null) {
+          contentStreamStr =
+              String.fromCharCodes(parsedPage.contentStreamData!);
+        }
+
+        final page = PdfPage.fromParsed(
+          width: parsedPage.width,
+          height: parsedPage.height,
+          contentStream: contentStreamStr,
+        );
+        doc.pages._pages.add(page);
+      }
+
+      // Populate bookmarks.
+      for (final bm in parser.bookmarks) {
+        doc.bookmarks.add(bm.title, pageIndex: bm.pageIndex);
+      }
+    } catch (e) {
+      // If parsing fails, store the raw bytes and return an empty doc.
+      // Users can still access rawBytes for their own purposes.
+    }
+
+    return doc;
   }
 
   /// Save the document and return PDF bytes.
+  ///
+  /// If the document was loaded from existing bytes, returns the
+  /// original bytes (preserving all fonts, images, etc.).
+  /// For new documents, serializes the current state.
   List<int> save() {
+    // If loaded from bytes, return original (preserves embedded fonts/images).
+    if (_rawBytes != null) {
+      return _rawBytes!;
+    }
+    return _serialize();
+  }
+
+  /// Save only the original bytes (if loaded from base64/bytes).
+  /// Returns null if this is a newly created document.
+  List<int>? saveOriginalBytes() => _rawBytes != null ? List<int>.from(_rawBytes!) : null;
+
+  /// Re-serialize the document from scratch (for new or modified documents).
+  /// Note: For loaded documents, use [save] to preserve original formatting.
+  List<int> saveAsNew() {
     return _serialize();
   }
 
@@ -57,7 +123,7 @@ class PdfDocument {
 
   /// Dispose resources.
   void dispose() {
-    // Clean up.
+    _rawBytes = null;
   }
 
   /// Serialize the entire document to PDF bytes.

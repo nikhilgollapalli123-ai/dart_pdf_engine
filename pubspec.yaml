@@ -1,6 +1,6 @@
 name: dart_pdf_engine
 description: A pure-Dart Flutter library for creating, reading, and manipulating PDF documents programmatically. Supports text, images, shapes, tables, fonts, bookmarks, and more.
-version: 1.0.0
+version: 1.1.0
 homepage: https://github.com/nikhilgollapalli123-ai/dart_pdf_engine
 repository: https://github.com/nikhilgollapalli123-ai/dart_pdf_engine
 issue_tracker: https://github.com/nikhilgollapalli123-ai/dart_pdf_engine/issues

@@ -35,3 +35,7 @@ export 'src/bookmarks/pdf_bookmark.dart';
 // Annotations
 export 'src/annotations/pdf_annotation.dart';
 export 'src/annotations/pdf_uri_annotation.dart';
+
+// Parser
+export 'src/parser/pdf_parser.dart';
+export 'src/parser/pdf_tokenizer.dart';

@@ -13,6 +13,19 @@ class PdfPage {
     );
   }
 
+  /// Create a page from parsed PDF data.
+  PdfPage.fromParsed({
+    required double width,
+    required double height,
+    String? contentStream,
+  }) : settings = PdfPageSettings(size: PdfPageSize(width, height)) {
+    if (contentStream != null) {
+      _graphics = PdfGraphics.fromParsed(width, height, contentStream);
+    } else {
+      _graphics = PdfGraphics(width, height);
+    }
+  }
+
   /// Get the graphics object for drawing on this page.
   PdfGraphics get graphics => _graphics;
 

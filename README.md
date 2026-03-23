@@ -18,6 +18,7 @@ A **pure-Dart** library for creating, reading, and manipulating PDF documents pr
 - ✅ **Bookmarks** — document outline for navigation
 - ✅ **Multi-page** — standard sizes (A4, Letter, Legal, A3, A5, etc.)
 - ✅ **Base64 support** — load from base64, save as base64
+- ✅ **PDF Parsing** — load existing PDFs from bytes or base64, extract pages, metadata, bookmarks
 - ✅ **Word wrapping** — automatic text wrapping within bounds
 - ✅ **Text alignment** — left, center, right
 
@@ -27,7 +28,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  dart_pdf_engine: ^1.0.0
+  dart_pdf_engine: ^1.1.0
 ```
 
 ## Quick Start
@@ -52,6 +53,39 @@ void main() async {
   File('hello.pdf').writeAsBytesSync(document.save());
   document.dispose();
 }
+```
+
+## Load & Display PDF from Base64
+
+```dart
+import 'dart:io';
+import 'package:dart_pdf_engine/dart_pdf_engine.dart';
+
+void main() async {
+  // Your base64-encoded PDF string.
+  final base64Pdf = '...';
+
+  // Parse the PDF from base64.
+  final document = PdfDocument.fromBase64(base64Pdf);
+
+  // Inspect parsed data.
+  print('Pages: ${document.pages.count}');
+  print('Title: ${document.documentInfo.title}');
+  print('Author: ${document.documentInfo.author}');
+  print('Bookmarks: ${document.bookmarks.bookmarks.length}');
+
+  // Save as a viewable PDF file.
+  File('output.pdf').writeAsBytesSync(document.save());
+  document.dispose();
+}
+```
+
+You can also load from raw bytes:
+
+```dart
+final bytes = File('input.pdf').readAsBytesSync();
+final document = PdfDocument.fromBytes(bytes);
+print('Loaded ${document.pages.count} pages');
 ```
 
 ## Usage Examples

@@ -22,6 +22,21 @@ class PdfGraphics {
 
   PdfGraphics(this._pageWidth, this._pageHeight);
 
+  /// Create graphics with an existing content stream (from parsed PDF).
+  PdfGraphics.fromParsed(
+    this._pageWidth,
+    this._pageHeight,
+    String existingContentStream,
+  ) {
+    _contentStream.write(existingContentStream);
+  }
+
+  /// Set the content stream directly (used by the parser).
+  void setContentStream(String content) {
+    _contentStream.clear();
+    _contentStream.write(content);
+  }
+
   /// Get the content stream as a string.
   String get contentStream => _contentStream.toString();
 
