@@ -1,3 +1,16 @@
+## 1.3.0
+
+* **Enhanced PDF Renderer** — Comprehensive content stream operator support for the PDF viewer:
+  * Text operators: `TJ`, `Tm`, `T*`, `TD`, `TL`, `Tc`, `Tw`, `'`, `"`
+  * Fill/stroke operators: `f*`, `B*`, `b`, `b*`, `s`
+  * Color operators: `cs`/`CS`, `sc`/`SC`/`scn`/`SCN`, `k`/`K` (CMYK)
+  * Path operators: `v`, `y`, `W*` (even-odd clipping)
+  * Line style: `j`, `J`, `M` (join, cap, miter limit)
+  * Composite operator tokenization (`f*`, `B*`, `b*`, `W*`, `T*`)
+  * Hex string support in `TJ` arrays
+* **Parser fix** — Resolve indirect `Resources` and `Font` dictionary references.
+* **Web compatibility** — Replaced `dart:io` ZLib with `package:archive` for cross-platform support (web/WASM).
+
 ## 1.2.0
 
 * **PDF Viewer Widget** — New `PdfViewer`, `PdfPageView`, and `PdfPageRenderer` widgets for rendering PDFs in Flutter.

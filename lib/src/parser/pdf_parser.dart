@@ -330,9 +330,17 @@ class PdfParser {
 
       // Resolve font resources.
       final fontResources = <String, PdfDictionary>{};
-      final resources = node['Resources'];
+      var resources = node['Resources'];
+      // Resolve indirect Resources reference.
+      if (resources is Map && resources['ref'] is int) {
+        resources = _resolveObject(resources['ref']);
+      }
       if (resources is Map<String, dynamic>) {
-        final fonts = resources['Font'];
+        var fonts = resources['Font'];
+        // Resolve indirect Font dict reference.
+        if (fonts is Map && fonts['ref'] is int) {
+          fonts = _resolveObject(fonts['ref']);
+        }
         if (fonts is Map<String, dynamic>) {
           for (final entry in fonts.entries) {
             if (entry.value is Map && (entry.value as Map)['ref'] is int) {
