@@ -1,3 +1,9 @@
+## 1.2.0
+
+* **PDF Viewer Widget** — New `PdfViewer`, `PdfPageView`, and `PdfPageRenderer` widgets for rendering PDFs in Flutter.
+* `PdfViewerController` for programmatic page navigation and zoom control.
+* Removed embedded raw data and test files from the package.
+
 ## 1.1.0
 
 * **PDF Parsing** — `PdfDocument.fromBase64()` and `PdfDocument.fromBytes()` now fully parse existing PDFs.
